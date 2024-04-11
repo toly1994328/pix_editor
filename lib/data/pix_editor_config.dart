@@ -8,7 +8,7 @@ class PixEditorConfig {
   final Color gridColor; // 网格颜色
   final bool showGrid; // 网格颜色
 
-  PixEditorConfig( {
+  PixEditorConfig({
     required this.row,
     required this.showGrid,
     required this.column,
@@ -16,4 +16,21 @@ class PixEditorConfig {
     required this.name,
     required this.gridColor,
   });
+
+  PixEditorConfig copyWith({
+    int? row,
+    int? column,
+    String? name,
+    Color? backgroundColor,
+    Color? gridColor,
+    bool? showGrid,
+  }) =>
+      PixEditorConfig(
+        row: row ?? this.row,
+        showGrid: showGrid ?? this.showGrid,
+        column: column ?? this.column,
+        backgroundColor: backgroundColor ?? this.backgroundColor,
+        name: name ?? this.name,
+        gridColor: gridColor ?? this.gridColor,
+      );
 }

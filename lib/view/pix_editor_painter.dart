@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
-
+import '../bloc/pix_paint_logic.dart';
+import '../bloc/project_config_logic.dart';
 import '../data/pix_cell.dart';
 import '../data/pix_editor_config.dart';
 
 class PixEditorPainter extends CustomPainter {
-  final PixEditorConfig config;
-  final List<PixCell> pixCells;
+  final ProjectConfigLogic projectConfigLogic;
+  final PixPaintLogic pixPaintLogic;
 
   PixEditorPainter({
-    required this.config,
-    required this.pixCells,
-  });
+    required this.projectConfigLogic,
+    required this.pixPaintLogic,
+  }):super(repaint: Listenable.merge([pixPaintLogic,projectConfigLogic]));
+
+  PixEditorConfig get config => projectConfigLogic.config;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -27,9 +30,9 @@ class PixEditorPainter extends CustomPainter {
   void drawPixCells(Canvas canvas, Size size){
     Paint cellPaint = Paint();
     double stepH = size.height / config.row;
-    double stepW = size.height / config.row;
-    for (int i = 0; i < pixCells.length; i++) {
-      PixCell cell = pixCells[i];
+    double stepW = size.height / config.column;
+    for (int i = 0; i < pixPaintLogic.pixCells.length; i++) {
+      PixCell cell = pixPaintLogic.pixCells[i];
       double top = cell.position.$1 * stepW;
       double left =  cell.position.$2 * stepH;
       Rect rect = Rect.fromLTWH(top , left, stepW, stepH);
@@ -47,7 +50,7 @@ class PixEditorPainter extends CustomPainter {
       path.moveTo(0, stepH * i);
       path.relativeLineTo(size.width, 0);
     }
-    double stepW = size.height / config.row;
+    double stepW = size.height / config.column;
     for (int i = 0; i <= config.column; i++) {
       path.moveTo(stepW * i, 0);
       path.relativeLineTo(0, size.height);
@@ -57,6 +60,6 @@ class PixEditorPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant PixEditorPainter oldDelegate) {
-    return oldDelegate.config != config || oldDelegate.pixCells != pixCells;
+    return false;
   }
 }
