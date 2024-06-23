@@ -15,13 +15,15 @@ class PainterSettings extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
+          width: double.maxFinite,
+          color: Color(0xffdbdbdb),
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 12),
           child: Text(
             "画笔配置",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
-        Divider(),
+        // Divider(),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: Column(

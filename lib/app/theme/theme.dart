@@ -48,6 +48,12 @@ ThemeData get lightTheme {
             borderRadius: BorderRadius.circular(12)
         )
     ),
+    menuButtonTheme: MenuButtonThemeData(
+      style: ButtonStyle(
+        padding: MaterialStatePropertyAll(EdgeInsets.symmetric(horizontal: 18)),
+        backgroundColor: MaterialStatePropertyAll(Colors.white)
+      )
+    ),
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: <TargetPlatform, PageTransitionsBuilder>{
         TargetPlatform.android: ZoomPageTransitionsBuilder(

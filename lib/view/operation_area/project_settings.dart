@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pix_editor/bloc/pix_paint_logic.dart';
 
 import '../../bloc/project_config_logic.dart';
 import '../../components/picker/color/toly_color_picker/toly_color_picker.dart';
@@ -15,13 +16,15 @@ class ProjectSettings extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
+          width: double.maxFinite,
+          color: Color(0xffdbdbdb),
           padding: EdgeInsets.symmetric(vertical: 4, horizontal: 12),
           child: Text(
             "项目配置",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
-        Divider(),
+        // Divider(),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: Column(
@@ -29,9 +32,7 @@ class ProjectSettings extends StatelessWidget {
               const SizedBox(
                 height: 8,
               ),
-              GridSizeSetting(
-                configLogic: configLogic,
-              ),
+              GridSizeSetting(),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -99,12 +100,11 @@ class GridSetting extends StatelessWidget {
 }
 
 class GridSizeSetting extends StatelessWidget {
-  final ProjectConfigLogic configLogic;
-
-  const GridSizeSetting({super.key, required this.configLogic});
+  const GridSizeSetting({super.key});
 
   @override
   Widget build(BuildContext context) {
+    PixPaintLogic logic = PixPaintScope.of(context);
     return Row(
       children: [
         Text(
@@ -114,8 +114,10 @@ class GridSizeSetting extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(
             child: CupertinoTextField(
-          controller: configLogic.rowCtrl,
-          onChanged: _onRowChanged,
+          controller: logic.rowCtrl,
+          onChanged: (v){
+            logic.updateRow(v);
+          },
           style: TextStyle(fontSize: 12),
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         )),
@@ -128,26 +130,12 @@ class GridSizeSetting extends StatelessWidget {
         ),
         Expanded(
             child: CupertinoTextField(
-          controller: configLogic.columnCtrl,
-          onChanged: _onColumnChanged,
+          controller: logic.columnCtrl,
+          onChanged: logic.updateColumn,
           style: TextStyle(fontSize: 12),
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         ))
       ],
     );
-  }
-
-  void _onRowChanged(String value) {
-    int? row = int.tryParse(value);
-    if (row != null && row > 0 && row <= 256) {
-      configLogic.updateRow(row);
-    }
-  }
-
-  void _onColumnChanged(String value) {
-    int? column = int.tryParse(value);
-    if (column != null && column > 0 && column <= 256) {
-      configLogic.updateColumn(column);
-    }
   }
 }

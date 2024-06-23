@@ -17,6 +17,10 @@ class PixEditorConfig {
     required this.gridColor,
   });
 
+  // static double boxSize = 15;
+
+  // Size get size => Size(row * boxSize, column * boxSize);
+
   PixEditorConfig copyWith({
     int? row,
     int? column,

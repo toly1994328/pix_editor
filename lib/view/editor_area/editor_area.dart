@@ -1,8 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:pix_editor/data/pix_editor_config.dart';
 
 import '../../bloc/pix_paint_logic.dart';
 import '../../bloc/project_config_logic.dart';
-import '../../data/pix_editor_config.dart';
 import '../pix_editor_painter.dart';
 
 class EditorArea extends StatelessWidget {
@@ -12,45 +13,45 @@ class EditorArea extends StatelessWidget {
   Widget build(BuildContext context) {
     ProjectConfigLogic configLogic = ProjectConfigScope.read(context);
     PixPaintLogic paintLogic = PixPaintScope.read(context);
-    return ColoredBox(
-      color: const Color(0xff939393),
-      child: Center(
-        child: SizedBox(
-          width: 400,
-          height: 400,
-          child: LayoutBuilder(
-            builder: (ctx, cts) => GestureDetector(
-              onTapDown: (detail) => _handleTapDown(
-                detail,
-                Size(cts.maxWidth, cts.maxWidth),
-                configLogic.config,
-                paintLogic,
-              ),
-              child: RepaintBoundary(
-                child: CustomPaint(
-                  painter: PixEditorPainter(
-                    projectConfigLogic: configLogic,
-                    pixPaintLogic: paintLogic,
-                  ),
-                ),
-              ),
+
+    void onScale(PointerSignalEvent event) {
+      if (event is PointerScrollEvent) {
+        if (event.scrollDelta.dy < 0) {
+          paintLogic.setScale(1.1, origin: event.localPosition);
+        } else {
+          paintLogic.setScale(0.9, origin: event.localPosition);
+        }
+      }
+    }
+
+    void onMove(DragUpdateDetails details) {
+      paintLogic.translation(details.delta.dx, details.delta.dy);
+    }
+
+    void onTapDown(TapDownDetails details) {
+      paintLogic.handleTap(details.localPosition);
+    }
+
+    void onSecondaryTapDown(TapDownDetails details) {
+      paintLogic.handleTap(details.localPosition, action: PixAction.delete);
+    }
+
+    return Listener(
+      onPointerSignal: onScale,
+      child: GestureDetector(
+        onPanUpdate: onMove,
+        onTapDown: onTapDown,
+        onSecondaryTapDown: onSecondaryTapDown,
+        child: RepaintBoundary(
+          child: CustomPaint(
+            painter: PixEditorPainter(
+              projectConfigLogic: configLogic,
+              pixPaintLogic: paintLogic,
             ),
+            child: const Center(),
           ),
         ),
       ),
     );
-  }
-
-  void _handleTapDown(
-    TapDownDetails details,
-    Size size,
-    PixEditorConfig config,
-    PixPaintLogic logic,
-  ) {
-    double stepH = size.height / config.row;
-    double stepW = size.height / config.column;
-    int x = details.localPosition.dx ~/ stepW;
-    int y = details.localPosition.dy ~/ stepH;
-    logic.hitPix(x, y);
   }
 }
